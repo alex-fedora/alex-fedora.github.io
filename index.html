@@ -657,7 +657,7 @@
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
   // Contact form
-  function handleSubmit() {
+    async function handleSubmit() {
     const name = document.getElementById('fname').value.trim();
     const email = document.getElementById('femail').value.trim();
     const type = document.getElementById('ftype').value;
@@ -665,11 +665,29 @@
     if (!name || !email || !type || !message) {
       alert('Please fill in all fields before submitting.'); return;
     }
-    document.getElementById('form-success').style.display = 'block';
-    document.getElementById('fname').value = '';
-    document.getElementById('femail').value = '';
-    document.getElementById('ftype').value = '';
-    document.getElementById('fmessage').value = '';
+    const btn = document.querySelector('.form-submit');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    try {
+      const res = await fetch('https://formspree.io/f/mpqbaola', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name, email, service: type, message })
+      });
+      if (res.ok) {
+        document.getElementById('form-success').style.display = 'block';
+        document.getElementById('fname').value = '';
+        document.getElementById('femail').value = '';
+        document.getElementById('ftype').value = '';
+        document.getElementById('fmessage').value = '';
+      } else {
+        alert('Something went wrong. Please try again.');
+      }
+    } catch(e) {
+      alert('Network error. Please try again.');
+    }
+    btn.textContent = 'Send Message →';
+    btn.disabled = false;
   }
 </script>
 </body>
